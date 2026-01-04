@@ -7,6 +7,18 @@ import matplotlib.pyplot as plt
 
 from tqdm import tqdm
 
+from modules.xfeat import XFeat as _XFeat
+
+def XFeat(top_k=4096, detection_threshold=0.05):
+    """
+    XFeat model
+    pretrained (bool): kwargs, load pretrained weights into the model
+    """
+    weights = torch.load("./weights/xfeat.pt")
+
+    model = _XFeat(weights, top_k=top_k, detection_threshold=detection_threshold)
+    return model
+
 def make_K_cam_depth(log_focals, pps, trans, quats, min_focals, max_focals, imsizes):
     # make intrinsics
     focals = log_focals.exp().clip(min=min_focals, max=max_focals)
@@ -118,7 +130,8 @@ def extract_conf_mask(match_outputs, depth_conf, base_image_path_list):
 @torch.inference_mode()
 def extract_matches(extrinsic, intrinsic, images, depth_conf, base_image_path_list, max_query_pts=4096, batch_size=128, err_range=20):
 
-    xfeat = torch.hub.load('verlab/accelerated_features', 'XFeat', pretrained=True, top_k=max_query_pts)
+    # xfeat = torch.hub.load('../accelerated_features', 'XFeat', pretrained=True, top_k=max_query_pts)
+    xfeat = XFeat(top_k=max_query_pts)
 
     pairs, pairs_cnt = image_pair_candidates(extrinsic, 30, unique_pairs=True)
     print("Total candidate image pairs found: ", pairs_cnt)

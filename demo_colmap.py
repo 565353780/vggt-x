@@ -35,14 +35,15 @@ from vggt.dependency.np_to_pycolmap import batch_np_matrix_to_pycolmap_wo_track
 
 torch._dynamo.config.accumulated_cache_size_limit = 512
 
-
 def run_VGGT(images, device, dtype, chunk_size):
     # images: [B, 3, H, W]
 
     # Run VGGT for camera and depth estimation
     model = VGGT(chunk_size=chunk_size)
-    _URL = "https://huggingface.co/facebook/VGGT-1B/resolve/main/model.pt"
-    model.load_state_dict(torch.hub.load_state_dict_from_url(_URL))
+    # _URL = "https://huggingface.co/facebook/VGGT-1B/resolve/main/model.pt"
+    # model.load_state_dict(torch.hub.load_state_dict_from_url(_URL))
+    model_file_path = os.environ['HOME'] + '/chLi/Model/VGGT/model.pt'
+    model.load_state_dict(torch.load(model_file_path))
     model.eval()
     model = model.to(device).to(dtype)
     model.track_head = None  # we do not need tracking head for reconstruction

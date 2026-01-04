@@ -1,5 +1,11 @@
 # VGGT-X
 
+## Download
+
+```bash
+https://huggingface.co/facebook/VGGT-1B/resolve/main/model.pt
+```
+
 ## Setup
 
 ```bash
